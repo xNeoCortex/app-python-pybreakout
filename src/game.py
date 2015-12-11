@@ -15,7 +15,7 @@ class PyBreakout:
     def initialize(self):
         pygame.init()
 
-        self.width = 1024
+        self.width = 924
         self.height = 768
         self.screen = pygame.display.set_mode((self.width, self.height))
 
@@ -24,10 +24,15 @@ class PyBreakout:
 
         self.framerate = 60
         self.backgroundColour = (255,255,255)
+        self.foregroundColour = (0,99,207)
 
         self.clock = pygame.time.Clock()
 
-        self.fontScore = pygame.font.SysFont("Arial", 15)
+        self.fontScore = pygame.font.SysFont("Arial Black", 21, bold=False)
+
+        self.gameScore = 0
+        self.gameBatsLeft = 3
+        self.gameBricksLeft = 120
 
     def mainLoop(self):
         while True:
@@ -51,8 +56,12 @@ class PyBreakout:
     def draw(self, gameTime):
         self.screen.fill(self.backgroundColour)
 
-        labelScore = self.fontScore.render("Hello", 1, (0,0,200))
-        self.screen.blit(labelScore, (100,100))
+        labelBricksLeft = self.fontScore.render("Bricks Left: %d" % self.gameBricksLeft, 1, self.foregroundColour)
+        labelBatsLeft = self.fontScore.render("Bats Left: %d" % self.gameBatsLeft, 1, self.foregroundColour)
+        labelScore = self.fontScore.render("Score: %d" % self.gameScore, 1, self.foregroundColour)
+        self.screen.blit(labelBricksLeft, (20,20))
+        self.screen.blit(labelBatsLeft, (370,20))
+        self.screen.blit(labelScore, (710,20))
 
         pygame.display.flip()
 
