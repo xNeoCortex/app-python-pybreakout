@@ -87,10 +87,14 @@ class PyBreakout:
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
-                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                    self.bat.setPosX(self.bat.getPosX() - 10)
-                if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                    self.bat.setPosX(self.bat.getPosX() + 10)
+
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_a] or pressed[pygame.K_LEFT]:
+            if self.bat.getPosX() >= 44:
+                self.bat.setPosX(self.bat.getPosX() - 10)
+        if pressed[pygame.K_d] or pressed[pygame.K_RIGHT]:
+            if self.bat.getPosX() <= 799:
+                self.bat.setPosX(self.bat.getPosX() + 10)
 
         self.ticks = self.ticks + gameTime
 
