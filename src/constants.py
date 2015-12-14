@@ -1,0 +1,7 @@
+backgroundColour = (255,255,255)
+foregroundColour = (0,99,207)
+colourRed = (255,0,0)
+colourPink = (254,0,254)
+colourOrange = (253,152,0)
+colourGreen = (38,199,0)
+colourYellow = (253,255,0)
