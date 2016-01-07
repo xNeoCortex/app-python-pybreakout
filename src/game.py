@@ -57,6 +57,10 @@ class PyBreakout:
 
         self.bat = player.Bat(self.screen)
 
+        self.projectile = player.Projectile(self.screen)
+
+        self.projectileFired = False
+
     def initBricks(self):
         yPos = 160
         for x in range(10):
@@ -69,12 +73,18 @@ class PyBreakout:
                 xPos += 70
             yPos += 22
 
+    def fireProjectile(self):
+        self.projectileFired = True
+        self.projectile.setPosition(self.bat.getPosX() + 42, self.bat.getPosY())
+
+
     def mainLoop(self):
         while True:
             gameTime = self.clock.get_time()
             self.update(gameTime)
             self.draw(gameTime)
             self.clock.tick(self.framerate)
+
 
     def update(self, gameTime):
 
@@ -95,12 +105,15 @@ class PyBreakout:
         if pressed[pygame.K_d] or pressed[pygame.K_RIGHT]:
             if self.bat.getPosX() <= 799:
                 self.bat.setPosX(self.bat.getPosX() + 10)
+        if pressed[pygame.K_SPACE]:
+            self.fireProjectile()
 
         self.ticks = self.ticks + gameTime
 
     def draw(self, gameTime):
         self.screen.fill(constants.backgroundColour)
 
+        #Display The Scoring Text
         labelBricksLeft = self.fontScore.render("Bricks Left: %d" % self.gameBricksLeft, 1, constants.foregroundColour)
         labelBatsLeft = self.fontScore.render("Bats Left: %d" % self.gameBatsLeft, 1, constants.foregroundColour)
         labelScore = self.fontScore.render("Score: %d" % self.gameScore, 1, constants.foregroundColour)
@@ -122,8 +135,13 @@ class PyBreakout:
             if (x == 23 or x == 47 or x == 71 or x == 95):
                 c = c + 1
 
+        #Draw Player
         self.bat.draw()
 
+        if (self.projectileFired == True):
+            self.projectile.draw()
+
+        #Projectile Debug
 
         pygame.display.flip()
 

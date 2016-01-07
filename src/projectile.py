@@ -1,17 +1,17 @@
 import pygame
 import constants
 
-class Brick:
+class Projectile:
 
     def __init__(self, screen):
-        self.positionX = 0
-        self.positionY = 0
+
         self.screen = screen
 
-        self.sizeX = 66
-        self.sizeY = 18
+        self.positionX = 0
+        self.positionY = 0
 
-        self.colourArr = [constants.colourRed,constants.colourPink,constants.colourOrange,constants.colourGreen,constants.colourYellow]
+        self.velocity = 0
+        self.angle = 0
 
 #Positioning
     def setPosX(self, x):
@@ -26,5 +26,5 @@ class Brick:
         return (self.positionX, self.positionY)
 #/End Positioning
 
-    def draw(self,c):
-        pygame.draw.rect(self.screen, self.colourArr[c], [self.positionX, self.positionY,self.sizeX,self.sizeY])
+    def draw(self):
+        pygame.draw.circle(self.screen, constants.colourRed, (self.positionX, self.positionY), 10, 10)

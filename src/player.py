@@ -4,19 +4,53 @@ import constants
 class Bat:
 
     def __init__(self, screen):
-        self.__batPosX = 500
-        self.__batPosY = 650
+        self.positionX = 500
+        self.positionY = 650
 
-        self.__batSizeX = 85
-        self.__batSizeY = 15
+        self.sizeX = 85
+        self.sizey = 15
 
         self.screen = screen
 
     def setPosX(self, x):
-        self.__batPosX = x
+        self.positionX = x
 
     def getPosX(self):
-        return self.__batPosX
+        return self.positionX
+
+    def getPosY(self):
+        return self.positionY
 
     def draw(self):
-        pygame.draw.rect(self.screen, constants.foregroundColour, [self.__batPosX, self.__batPosY,self.__batSizeX,self.__batSizeY])
+        pygame.draw.rect(self.screen, constants.foregroundColour, [self.positionX, self.positionY,self.sizeX,self.sizey])
+
+class Projectile:
+
+    def __init__(self, screen):
+
+        self.screen = screen
+
+        self.positionX = 0
+        self.positionY = 0
+
+        self.velocity = 0
+        self.angle = 0
+
+
+    def setpositionX(self, x):
+        self.positionX = x
+    def setpositionY(self, y):
+        self.positionY = y
+    def setPosition(self, x, y):
+        self.positionX = x
+        self.positionY = y
+    def getpositionX(self):
+        return self.positionX
+    def getpositionY(self):
+        return self.positionY
+    def getPosition(self):
+        return (self.positionX, self.positionY)
+
+
+    def draw(self):
+        pygame.draw.circle(self.screen, constants.colourRed, (self.positionX, self.positionY), 5, 0)
