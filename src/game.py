@@ -96,6 +96,49 @@ class PyBreakout:
             if rectProjectile.colliderect(rectBrick):
                 self.bricksArr[i].setPosX(1000)
                 self.gameBricksLeft = self.gameBricksLeft - 1
+                self.projectile.reflect()
+                self.projectile.reflectGrad()
+
+        #Draw bounding box for bat
+        rectBat = []
+        rectBat.append(pygame.Rect(self.bat.getPosX(), self.bat.getPosY(), 20, 15))
+        rectBat.append(pygame.Rect(self.bat.getPosX()+20, self.bat.getPosY(), 20, 15))
+        rectBat.append(pygame.Rect(self.bat.getPosX()+40, self.bat.getPosY(), 5, 15))
+        rectBat.append(pygame.Rect(self.bat.getPosX()+45, self.bat.getPosY(), 20, 15))
+        rectBat.append(pygame.Rect(self.bat.getPosX()+65, self.bat.getPosY(), 20, 15))
+
+        for i in range(5):
+            if rectProjectile.colliderect(rectBat[0]):
+                self.projectile.setGrad(-1)
+                self.projectile.reflect()
+            if rectProjectile.colliderect(rectBat[1]):
+                self.projectile.setGrad(-0.3)
+                self.projectile.reflect()
+            if rectProjectile.colliderect(rectBat[2]):
+                self.projectile.setGrad(0)
+                self.projectile.reflect()
+            if rectProjectile.colliderect(rectBat[3]):
+                self.projectile.setGrad(0.3)
+                self.projectile.reflect()
+            if rectProjectile.colliderect(rectBat[4]):
+                self.projectile.setGrad(1)
+                self.projectile.reflect()
+
+        #Draw bounding box for walls
+        rectWalls = []
+        rectWalls.append(pygame.Rect(20,50,20,650))
+        rectWalls.append(pygame.Rect(20,50,884,20))
+        rectWalls.append(pygame.Rect(884,50,20,650))
+        for i in range(3):
+            if rectProjectile.colliderect(rectWalls[i]):
+                self.projectile.reflectGrad()
+
+        #Draw Bounding for entire level (lost projectile)
+        rectOutofBounds = pygame.Rect(0,760,1000,10) # remember to do the thing
+        if rectProjectile.colliderect(rectOutofBounds):
+            self.projectileFired = False
+            self.projectile.setGrad(0)
+            self.projectile.reflect()
 
 
     def update(self, gameTime):
@@ -145,7 +188,8 @@ class PyBreakout:
         pygame.draw.rect(self.screen, constants.foregroundColour, [20,50,884,20])
         pygame.draw.rect(self.screen, constants.foregroundColour, [884,50,20,650])
 
-        #This is an area for improvemnt through a mathematical function and loops
+
+        # Colour the blocks
         c = 0
         for x in range(120):
             self.bricksArr[x].draw(c)

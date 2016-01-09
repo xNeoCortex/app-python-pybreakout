@@ -34,7 +34,10 @@ class Projectile:
         self.positionY = 0
 
         self.velocity = 10
-        self.angle = 0
+
+        #angle controller to me moved to a function
+        self.angle = 90
+        self.gradient = 1
 
     def setPosX(self, x):
         self.positionX = x
@@ -43,17 +46,34 @@ class Projectile:
     def setPosition(self, x, y):
         self.positionX = x
         self.positionY = y
+    def setAngle(self, a):
+        self.angle = int(a)
     def getPosX(self):
         return self.positionX
     def getPosY(self):
         return self.positionY
     def getPosition(self):
         return (self.positionX, self.positionY)
+    def reflect(self):
+        self.angle = self.angle + 180
+        if self.angle > 360:
+            self.angle = self.angle - 360
+    def reflectGrad(self):
+        self.gradient = (self.gradient * -1)
+    def setGrad(self, g):
+        self.gradient = g
 
     def draw(self):
         pygame.draw.circle(self.screen, constants.colourRed, (self.positionX, self.positionY), 5, 0)
 
     def move(self):
-        self.positionY = self.positionY - self.velocity
+        if self.angle >= 180:
+            self.velocity = self.velocity = -10
+        elif self.angle <= 180:
+            self.velocity = self.velocity = 10
 
-    
+        x = self.positionX + (self.velocity * self.gradient)
+
+        y = self.positionY - self.velocity
+
+        self.setPosition(int(x), int(y))
