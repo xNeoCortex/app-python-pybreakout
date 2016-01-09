@@ -77,13 +77,25 @@ class PyBreakout:
         self.projectileFired = True
         self.projectile.setPosition(self.bat.getPosX() + 42, self.bat.getPosY())
 
-
     def mainLoop(self):
         while True:
             gameTime = self.clock.get_time()
             self.update(gameTime)
             self.draw(gameTime)
             self.clock.tick(self.framerate)
+
+    #Projectile Collision Handler
+    def projectileCollision(self):
+
+        #Draw bounding box for Projectile
+        rectProjectile = pygame.Rect(self.projectile.getPosX(), self.projectile.getPosY(),5,5)
+
+        #Draw bounding box for Bricks
+        for i in range(120):
+            rectBrick = pygame.Rect(self.bricksArr[i].getPosX(),self.bricksArr[i].getPosY(), 66, 18)
+            if rectProjectile.colliderect(rectBrick):
+                self.bricksArr[i].setPosX(1000)
+                self.gameBricksLeft = self.gameBricksLeft - 1
 
 
     def update(self, gameTime):
@@ -105,10 +117,15 @@ class PyBreakout:
         if pressed[pygame.K_d] or pressed[pygame.K_RIGHT]:
             if self.bat.getPosX() <= 799:
                 self.bat.setPosX(self.bat.getPosX() + 10)
-        if pressed[pygame.K_SPACE]:
-            self.fireProjectile()
+        if pressed[pygame.K_SPACE] and (self.projectileFired == False):
+            self.fireProjectile() #could use some work
 
         self.ticks = self.ticks + gameTime
+
+        if (self.projectileFired == True):
+            self.projectile.move()
+            self.projectileCollision()
+
 
     def draw(self, gameTime):
         self.screen.fill(constants.backgroundColour)
