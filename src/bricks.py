@@ -11,7 +11,7 @@ class Brick:
         self.sizeX = 66
         self.sizeY = 18
 
-        self.colourArr = [constants.colourRed,constants.colourPink,constants.colourOrange,constants.colourGreen,constants.colourYellow]
+        self.colourArr = [constants.colourRed,constants.colourPink,constants.colourOrange,constants.colourGreen,constants.colourYellow,constants.colourSpecial]
 
 #Positioning
     def setPosX(self, x):

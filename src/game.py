@@ -1,5 +1,7 @@
 #Requirements
 import sys
+import os
+import random
 import pygame
 from pygame.locals import *
 import constants
@@ -54,6 +56,7 @@ class PyBreakout:
         #     xPos += 70
 
         self.initBricks()
+        self.special = random.randint(1, 120)
 
         self.bat = player.Bat(self.screen)
 
@@ -72,6 +75,7 @@ class PyBreakout:
                 self.bricksArr.append(brickObj)
                 xPos += 70
             yPos += 22
+
 
     def fireProjectile(self):
         self.projectileFired = True
@@ -94,10 +98,15 @@ class PyBreakout:
         for i in range(120):
             rectBrick = pygame.Rect(self.bricksArr[i].getPosX(),self.bricksArr[i].getPosY(), 66, 18)
             if rectProjectile.colliderect(rectBrick):
-                self.bricksArr[i].setPosX(1000)
-                self.gameBricksLeft = self.gameBricksLeft - 1
-                self.projectile.reflect()
-                self.projectile.reflectGrad()
+                if i == self.special:
+                    self.gameBatsLeft += 1
+                    self.gameScore += 20
+                else:
+                    self.bricksArr[i].setPosX(1000)
+                    self.gameBricksLeft = self.gameBricksLeft - 1
+                    self.gameScore += 10
+                    self.projectile.reflect()
+                    self.projectile.reflectGrad()
 
         #Draw bounding box for bat
         rectBat = []
@@ -111,16 +120,16 @@ class PyBreakout:
             if rectProjectile.colliderect(rectBat[0]):
                 self.projectile.setGrad(-1)
                 self.projectile.reflect()
-            if rectProjectile.colliderect(rectBat[1]):
+            elif rectProjectile.colliderect(rectBat[1]):
                 self.projectile.setGrad(-0.3)
                 self.projectile.reflect()
-            if rectProjectile.colliderect(rectBat[2]):
+            elif rectProjectile.colliderect(rectBat[2]):
                 self.projectile.setGrad(0)
                 self.projectile.reflect()
-            if rectProjectile.colliderect(rectBat[3]):
+            elif rectProjectile.colliderect(rectBat[3]):
                 self.projectile.setGrad(0.3)
                 self.projectile.reflect()
-            if rectProjectile.colliderect(rectBat[4]):
+            elif rectProjectile.colliderect(rectBat[4]):
                 self.projectile.setGrad(1)
                 self.projectile.reflect()
 
@@ -137,11 +146,22 @@ class PyBreakout:
         rectOutofBounds = pygame.Rect(0,760,1000,10) # remember to do the thing
         if rectProjectile.colliderect(rectOutofBounds):
             self.projectileFired = False
+            self.gameBatsLeft = self.gameBatsLeft - 1
             self.projectile.setGrad(0)
             self.projectile.reflect()
 
+    def gameLost(self):
+        print("balls")
+
+    def gameWon(self):
+        print("thing")
 
     def update(self, gameTime):
+
+        if self.gameBatsLeft == -1:
+            self.gameLost()
+        if self.gameBricksLeft == 0:
+            self.gameWon()
 
         events = pygame.event.get()
         for event in events:
@@ -150,8 +170,7 @@ class PyBreakout:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
+                    game = MainMenu()
 
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_a] or pressed[pygame.K_LEFT]:
@@ -196,6 +215,8 @@ class PyBreakout:
             if (x == 23 or x == 47 or x == 71 or x == 95):
                 c = c + 1
 
+        self.bricksArr[self.special].draw(5)
+
         #Draw Player
         self.bat.draw()
 
@@ -206,5 +227,58 @@ class PyBreakout:
 
         pygame.display.flip()
 
+class MainMenu:
+
+    def __init__(self):
+        pygame.init()
+
+        self.width = 924
+        self.height = 768
+        self.screen = pygame.display.set_mode((self.width, self.height))
+        self.clock = pygame.time.Clock()
+        self.framerate = 60
+        self.fontWelcome = pygame.font.SysFont("Arial Black", 21, bold=False)
+        self.logo = pygame.image.load(os.path.join('resources', 'logo.jpg'))
+        self.state = 0
+
+        self.mainLoop()
+
+    def setState(self, state):
+        #0: Main menu 1: Win 2: Loss
+        self.state = state
+
+    def mainLoop(self):
+        while True:
+            gameTime = self.clock.get_time()
+            self.update(gameTime)
+            self.draw(gameTime)
+            self.clock.tick(self.framerate)
+
+    def update(self, gameTime):
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+                if event.key == pygame.K_SPACE:
+                    game = PyBreakout()
+
+    def draw(self, gameTime):
+        self.screen.fill(constants.backgroundColour)
+
+        labelWelcome = self.fontWelcome.render("Press <Space> To Start Game", 1, constants.foregroundColour)
+
+        if self.state == 0:
+            self.screen.blit(self.logo, (40,200))
+            self.screen.blit(labelWelcome, (300, 400))
+
+
+        pygame.display.flip()
+
+
 if __name__ == "__main__":
-    game = PyBreakout()
+    game = MainMenu()
