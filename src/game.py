@@ -20,6 +20,8 @@ class PyBreakout:
     #Declare variables and initialization classes here
     def initialize(self):
         pygame.init()
+        self.sound = pygame.mixer.Sound("adam.wav")
+        self.death = pygame.mixer.Sound("death.wav")
 
         self.width = 924
         self.height = 768
@@ -56,7 +58,7 @@ class PyBreakout:
         #     xPos += 70
 
         self.initBricks()
-        self.special = random.randint(1, 120)
+        self.special = random.randint(2, 119)
 
         self.bat = player.Bat(self.screen)
 
@@ -101,12 +103,15 @@ class PyBreakout:
                 if i == self.special:
                     self.gameBatsLeft += 1
                     self.gameScore += 20
+                    self.bricksArr[i].setPosX(1000)
+                    self.sound.play()
                 else:
                     self.bricksArr[i].setPosX(1000)
                     self.gameBricksLeft = self.gameBricksLeft - 1
                     self.gameScore += 10
                     self.projectile.reflect()
                     self.projectile.reflectGrad()
+                    self.sound.play()
 
         #Draw bounding box for bat
         rectBat = []
@@ -120,18 +125,23 @@ class PyBreakout:
             if rectProjectile.colliderect(rectBat[0]):
                 self.projectile.setGrad(-1)
                 self.projectile.reflect()
+                self.sound.play()
             elif rectProjectile.colliderect(rectBat[1]):
                 self.projectile.setGrad(-0.3)
                 self.projectile.reflect()
+                self.sound.play()
             elif rectProjectile.colliderect(rectBat[2]):
-                self.projectile.setGrad(0)
+                self.projectile.setGrad(0.3)
                 self.projectile.reflect()
+                self.sound.play()
             elif rectProjectile.colliderect(rectBat[3]):
                 self.projectile.setGrad(0.3)
                 self.projectile.reflect()
+                self.sound.play()
             elif rectProjectile.colliderect(rectBat[4]):
                 self.projectile.setGrad(1)
                 self.projectile.reflect()
+                self.sound.play()
 
         #Draw bounding box for walls
         rectWalls = []
@@ -141,20 +151,26 @@ class PyBreakout:
         for i in range(3):
             if rectProjectile.colliderect(rectWalls[i]):
                 self.projectile.reflectGrad()
+                self.sound.play()
+
+        if rectProjectile.colliderect(rectWalls[1]):
+            self.projectile.reflect()
 
         #Draw Bounding for entire level (lost projectile)
         rectOutofBounds = pygame.Rect(0,760,1000,10) # remember to do the thing
         if rectProjectile.colliderect(rectOutofBounds):
             self.projectileFired = False
             self.gameBatsLeft = self.gameBatsLeft - 1
-            self.projectile.setGrad(0)
+            self.projectile.setGrad(0.2)
             self.projectile.reflect()
+            self.death.play()
+
 
     def gameLost(self):
-        print("balls")
+        game = MainMenu(self.gameScore, 2)
 
     def gameWon(self):
-        print("thing")
+        game = MainMenu(self.gameScore, 1)
 
     def update(self, gameTime):
 
@@ -170,15 +186,15 @@ class PyBreakout:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    game = MainMenu()
+                    game = MainMenu(0, 0)
 
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_a] or pressed[pygame.K_LEFT]:
             if self.bat.getPosX() >= 44:
-                self.bat.setPosX(self.bat.getPosX() - 10)
+                self.bat.setPosX(self.bat.getPosX() - 15)
         if pressed[pygame.K_d] or pressed[pygame.K_RIGHT]:
             if self.bat.getPosX() <= 799:
-                self.bat.setPosX(self.bat.getPosX() + 10)
+                self.bat.setPosX(self.bat.getPosX() + 15)
         if pressed[pygame.K_SPACE] and (self.projectileFired == False):
             self.fireProjectile() #could use some work
 
@@ -229,23 +245,20 @@ class PyBreakout:
 
 class MainMenu:
 
-    def __init__(self):
+    def __init__(self, score, state):
         pygame.init()
-
+        self.score = score
         self.width = 924
         self.height = 768
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.clock = pygame.time.Clock()
         self.framerate = 60
         self.fontWelcome = pygame.font.SysFont("Arial Black", 21, bold=False)
+        self.fontBig = pygame.font.SysFont("Arial Black", 40, bold=False)
         self.logo = pygame.image.load(os.path.join('resources', 'logo.jpg'))
-        self.state = 0
+        self.state = state
 
         self.mainLoop()
-
-    def setState(self, state):
-        #0: Main menu 1: Win 2: Loss
-        self.state = state
 
     def mainLoop(self):
         while True:
@@ -271,14 +284,37 @@ class MainMenu:
         self.screen.fill(constants.backgroundColour)
 
         labelWelcome = self.fontWelcome.render("Press <Space> To Start Game", 1, constants.foregroundColour)
+        labelInstruction1 = self.fontWelcome.render("You have 3 Lives", 1, constants.foregroundColour)
+        labelInstruction2 = self.fontWelcome.render("Each brick is 10 points", 1, constants.foregroundColour)
+        labelInstruction3 = self.fontWelcome.render("The Black brick gives you 20 points and 1 extra life", 1, constants.foregroundColour)
+        labelInstruction4 = self.fontWelcome.render("Use A & D or the arrow keys to move", 1, constants.foregroundColour)
+        labelInstruction5 = self.fontWelcome.render("You can press <esc> at any time to return to this screen", 1, constants.foregroundColour)
+
+
+        labelWin = self.fontBig.render("Congrats you beat the game!", 1, constants.foregroundColour)
+
+        labelLoss = self.fontBig.render("Oh no you ran out of bats", 1, constants.foregroundColour)
+        labelScore = self.fontWelcome.render("Final score: %d" % self.score, 1, constants.foregroundColour)
+        labelPlayAgain= self.fontWelcome.render("Press <Space> To try again", 1, constants.foregroundColour)
 
         if self.state == 0:
             self.screen.blit(self.logo, (40,200))
             self.screen.blit(labelWelcome, (300, 400))
+            self.screen.blit(labelInstruction1, (350, 440))
+            self.screen.blit(labelInstruction2, (320, 460))
+            self.screen.blit(labelInstruction3, (190, 480))
+            self.screen.blit(labelInstruction4, (280, 500))
+            self.screen.blit(labelInstruction5, (140, 520))
+        elif self.state == 1:
+            self.screen.blit(labelWin, (140,200))
+        elif self.state == 2:
+            self.screen.blit(labelLoss, (180,300))
+            self.screen.blit(labelScore, (400,400))
+            self.screen.blit(labelPlayAgain, (320,440))
 
 
         pygame.display.flip()
 
 
 if __name__ == "__main__":
-    game = MainMenu()
+    game = MainMenu(0,0)
