@@ -35,6 +35,8 @@ class Projectile:
 
         self.velocity = 10
 
+        self.time = 0
+
         #angle controller to me moved to a function
         self.angle = 90
         self.gradient = 1
@@ -67,6 +69,9 @@ class Projectile:
         pygame.draw.circle(self.screen, constants.colourRed, (self.positionX, self.positionY), 5, 0)
 
     def move(self):
+        self.time += 1
+        self.velocity = 10 * math.sin(self.time / 10.0)
+
         if self.angle >= 180:
             self.velocity = self.velocity = -10
         elif self.angle <= 180:
