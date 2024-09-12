@@ -4,6 +4,7 @@ import os
 import random
 import pygame
 from pygame.locals import *
+import math
 import constants
 #import player
 import bricks
@@ -102,13 +103,13 @@ class PyBreakout:
             if rectProjectile.colliderect(rectBrick):
                 if i == self.special:
                     self.gameBatsLeft += 1
-                    self.gameScore += 20
+                    self.gameScore = int(100 * math.log10(120 - self.gameBricksLeft))
                     self.bricksArr[i].setPosX(1000)
                     self.sound.play()
                 else:
                     self.bricksArr[i].setPosX(1000)
                     self.gameBricksLeft = self.gameBricksLeft - 1
-                    self.gameScore += 10
+                    self.gameScore = int(100 * math.log10(120 - self.gameBricksLeft))
                     self.projectile.reflect()
                     self.projectile.reflectGrad()
                     self.sound.play()
@@ -294,7 +295,7 @@ class MainMenu:
         labelWin = self.fontBig.render("Congrats you beat the game!", 1, constants.foregroundColour)
 
         labelLoss = self.fontBig.render("Oh no you ran out of bats", 1, constants.foregroundColour)
-        labelScore = self.fontWelcome.render("Final score: %d" % self.score, 1, constants.foregroundColour)
+        labelScore = self.fontWelcome.render("Final score: %s" % str(self.score), 1, constants.foregroundColour)
         labelPlayAgain= self.fontWelcome.render("Press <Space> To try again", 1, constants.foregroundColour)
 
         if self.state == 0:
